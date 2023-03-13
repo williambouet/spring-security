@@ -46,4 +46,9 @@ public class HelloWorldController {
     public String accesDenied() {
         return "GO AWAY!!!";
     }
+
+    @GetMapping("/404")
+    public String accesNotFound() {
+        return "Are you lost ? We have not found your request. This is a 404 page.";
+    }
 }

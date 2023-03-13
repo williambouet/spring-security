@@ -13,25 +13,28 @@ import org.springframework.security.web.SecurityFilterChain;
 @Configuration
 public class MySecurityConfig {
 
-
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        return http
-                .authorizeRequests(authorize -> authorize
-                        .requestMatchers("/secret-bases/**").hasRole("DIRECTOR")
-                        .requestMatchers("/avengers/assemble/**").hasAnyRole("CHAMPION", "DIRECTOR")
-                        .anyRequest().authenticated())
-                .formLogin()
-                .and()
-                .logout()
-                .logoutSuccessUrl("/")
-                .and()
-                .exceptionHandling()
-                .accessDeniedHandler((request, response, accessDeniedException) -> {
-                    response.sendRedirect("/access-denied");
+        http
+                .authorizeHttpRequests((authorize) -> {
+                    try {
+                        authorize
+                                .requestMatchers("/secret-bases/**").hasRole("DIRECTOR")
+                                .requestMatchers("/avengers/assemble/**").hasAnyRole("CHAMPION", "DIRECTOR")
+                                .anyRequest().authenticated();
+
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 })
-                .and()
-                .build();
+                .formLogin()
+                .and().httpBasic()
+                .and().logout().logoutSuccessUrl("/")
+                .and().exceptionHandling().accessDeniedHandler((request, response, accessDeniedException) -> {
+                    response.sendRedirect("/access-denied");
+                });
+
+        return http.build();
     }
 
     @Bean
